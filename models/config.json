@@ -1,0 +1,20 @@
+{
+
+  "qa": {
+    "username": "myUserAdmin",
+    "password": "abc123",
+    "database": "cakemporos_qa",
+    "host": "127.0.0.1",
+    "port": 27017
+  },
+  "clientuat": {
+    "username": "cakemporoslogapp",
+    "password": "c@k3mp0r0zLOGO",
+    "database": "cakemporos_uat",
+    "host": "127.0.0.1",
+    "port": 27017
+  },
+  "production": {
+
+  }
+}
