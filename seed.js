@@ -61,7 +61,7 @@ module.exports = function(models, ObjectId){
     newId.save(callback);
 
     var baker = {
-      login: newId._id,
+      user: newId._id,
       locality: localities[0]._id,
       address: "yalagaadh"
     }

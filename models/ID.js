@@ -14,18 +14,18 @@ var userSchema = mongoose.Schema({
     email        : {type: String, unique: true, required: true},
     password     : {type: String, unique: false, required: true},
 
-    facebook         : {
-        id           : String,
-        token        : String,
-        email        : String,
-        name         : String
-    },
-    google           : {
-        id           : String,
-        token        : String,
-        email        : String,
-        name         : String
-    },
+    // facebook         : {
+    //     id           : String,
+    //     token        : String,
+    //     email        : String,
+    //     name         : String
+    // },
+    // google           : {
+    //     id           : String,
+    //     token        : String,
+    //     email        : String,
+    //     name         : String
+    // },
     userType : {type: String, required: true}
 
 

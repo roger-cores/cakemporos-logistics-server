@@ -7,9 +7,7 @@ var ObjectId = Schema.ObjectId;
 
 var bakerSchema = mongoose.Schema({
 
-  login: {type: ObjectId, ref: 'login', required: true, unique: true},
-  lat: {type: Number, required: false},
-  longi: {type: Number, required: false},
+  user: {type: ObjectId, ref: 'login', required: true, unique: true},
   locality: {type: ObjectId, ref: 'locality', required: true},
   address: {type: String, required: true}
 
