@@ -53,7 +53,7 @@ module.exports = function(models, ObjectId){
 
     var newId = new models.ID();
     newId._id = new ObjectId();
-    newId.email = "rogercores2@gmail.com";
+    newId.email = "rc123";
     newId.name = "rogercores";
     newId.phone = 8655814592;
     newId.userType = "RIDER";

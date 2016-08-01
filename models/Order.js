@@ -37,7 +37,7 @@ var orderSchema = mongoose.Schema({
 // create the model for rider and expose it to our app
 var Order = mongoose.model('order', orderSchema);
 Order.schema.path('cakeType').validate(function(value){
-	return /CUST|NORM/.test(value);
+	return /Customized|Normal|Photo/.test(value);
 }, 'Invalid OrderType');
 
 Order.schema.path('status').validate(function(value){
