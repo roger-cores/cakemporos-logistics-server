@@ -16,7 +16,7 @@ var orderSchema = mongoose.Schema({
   cost: {type: Number, required: true},
 
   pUpDate: {type: Date, required: true},
-  dDate: {type: Date, required: true},
+  dDate: {type: Date, required: false},
   altPhone: {type: Number, required: false},
   weight: {type: String, required: true},
 
@@ -46,7 +46,7 @@ Order.schema.path('status').validate(function(value){
 
 
 Order.schema.path('weight').validate(function(value){
-	return /0.5 Kg|1 Kg|1.5 Kg|2 Kg/.test(value);
+	return /HALF|ONE|ONEANDHALF|TWO/.test(value);
 }, 'Invalid Order weight');
 
 module.exports = Order;

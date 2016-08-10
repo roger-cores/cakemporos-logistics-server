@@ -20,9 +20,9 @@ module.exports.registerRoutes = function(models, passport, multiparty, utils, oa
       else {res.status(codes.UNAUTHORIZED).send({message: 'Unauthorized'}); return;}
       models.Token.findOne({name: tokenHash}, function(err, token){
           if(err) next(err);
-          else if(!token){res.status(codes.UNAUTHORIZED).send({message: 'Unauthorized'})}
+          else if(!token){res.status(codes.UNAUTHORIZED).send({error: 'Unauthorized', error_description: "Access Token Invalid"})}
 
-          else if(token.expirationDate < Date.now()) res.status(codes.UNAUTHORIZED).send({message: 'Unauthorized'})
+          else if(token.expirationDate < Date.now()) res.status(codes.UNAUTHORIZED).send({message: 'Unauthorized', error_description: "Access Token Invalid"})
           else {
 
               req.body.access_token = req.session.access_token;

@@ -11,7 +11,7 @@ module.exports.registerRoutes = function(models, codes){
 
   router.get('/', function(req, res, next){
 
-    
+
 
     models.Baker.findOne({user: req.body.user_id})
       .populate('user')
@@ -35,8 +35,10 @@ module.exports.registerRoutes = function(models, codes){
 
   router.post('/', function(req, res, next){
 
-    req.body.pUpDate = moment(req.body.pickUpDate, "DD/MM/YYYY HH:mm:ss");
-    req.body.dDate = moment(req.body.dropDate, "DD/MM/YYYY HH:mm:ss");
+    console.log(req.body);
+
+    req.body.pUpDate = moment(req.body.pickUpDate, "DD-MM-YYYY HH:mm:ss");
+    req.body.dDate = moment(req.body.dropDate, "DD-MM-YYYY HH:mm:ss");
 
     models.Baker.findOne({user: req.body.user_id}, function(err, baker){
       if(err) next(err);
@@ -47,6 +49,7 @@ module.exports.registerRoutes = function(models, codes){
 
             var locality_id = req.body.locality._id;
             req.body.customer.locality = locality_id;
+            req.body.customer.baker = baker._id;
             new models.Customer(req.body.customer).save(function(err, customer){
               if(err) next(err);
               else if(!customer) {next({message: "This customer is dead to me!"})}
@@ -59,7 +62,7 @@ module.exports.registerRoutes = function(models, codes){
                   if(err) next(err);
                   else if(!order)   next({message: 'I\'ve failed you, master!'});
                   else {
-                    res.status(codes.CREATED).send(order);
+                    res.status(codes.CREATED).send({_id: order._id, __v: order.__v});
                   }
                 });
               }

@@ -6,7 +6,7 @@ var ObjectId = Schema.ObjectId;
 var customerSchema = new Schema({
 	firstName: {type: String, required: true, unique: false},
   lastName: {type: String, required: false, unique: false},
-
+	baker: {type: ObjectId, ref: 'baker', required: true},
 
   locality: {type: ObjectId, ref: 'locality', required: true},
   address: {type: String, required: true},
