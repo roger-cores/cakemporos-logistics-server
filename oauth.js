@@ -119,7 +119,7 @@ server.exchange(oauth2orize.exchange.refreshToken(function (client, refreshToken
 
 // token endpoint
 exports.token = [
-    passport.authenticate(['clientBasic', 'clientPassword'], { session: false }),
+    passport.authenticate(['clientBasic', 'clientPassword'], {failWithError: true}),
     server.token(),
     server.errorHandler()
 ]

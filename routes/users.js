@@ -15,6 +15,8 @@ module.exports.registerRoutes = function(models, passport, multiparty, utils, oa
     var preAuthenticate = function(req, res, next){
       if(req.session.access_token)
         var tokenHash = crypto.createHash('sha1').update(req.session.access_token).digest('hex');
+      else if(req.get("x-access-token"))
+        var tokenHash = crypto.createHash('sha1').update(req.get("x-access-token")).digest('hex');
       else {res.status(codes.UNAUTHORIZED).send({message: 'Unauthorized'}); return;}
       models.Token.findOne({name: tokenHash}, function(err, token){
           if(err) next(err);
@@ -43,18 +45,25 @@ module.exports.registerRoutes = function(models, passport, multiparty, utils, oa
 
         models.Token.findOne({name: tokenHash}, function(err, token){
             if(err) next(err);
-            else if(!token){res.status(codes.UNAUTHORIZED).send({message: 'Unauthorized'})}
+            else if(!token){res.status(codes.UNAUTHORIZED).send({error: "Unauthorized", error_description: "Unauthorized"})}
 
-            else if(token.expirationDate < Date.now()) res.status(codes.UNAUTHORIZED).send({message: 'Unauthorized'});
+            else if(token.expirationDate < Date.now()) res.status(codes.UNAUTHORIZED).send({error: "Unauthorized", error_description: "Unauthorized"});
             else {
               req.session.access_token = req.body.access_token;
-              res.status(codes.OK).send({code: 1})
+              res.status(codes.OK).send({code: 1});
 
             };
         });
+    }, function(err, req, res, next){
+      next({error: "Contingency", error_description: "Unknown"});
     });
 
-    router.post('/oauth/token', oauth.token);
+    router.post('/oauth/token', function(req, res, next){
+      next();
+    }, oauth.token, function(err, req, res, next){
+      console.log(err);
+      next(err);
+    });
 
 
 
@@ -131,7 +140,13 @@ module.exports.registerRoutes = function(models, passport, multiparty, utils, oa
     router.use('/baker/order', preAuthenticate, authBaker, order.registerRoutes(models, codes));
     router.use('/baker/rate', preAuthenticate, authBaker, rate.registerRoutes(models, codes));
     router.use('/baker/locality', preAuthenticate, authBaker, locality.registerRoutes(models, codes));
-
+    router.get('/test', preAuthenticate, authBaker, function(req, res, next){
+      console.log("here");
+      console.log(req.get("x-access-token"));
+      res.status(200).send({message: "yolo"});
+    }, function(err, req, res, next){
+      next(err);
+    });
 
 
 
