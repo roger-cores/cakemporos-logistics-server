@@ -1,5 +1,6 @@
 var express = require('express');
 var moment = require('moment');
+var Hashids = require('hashids');
 var router = express.Router();
 //Order related calls for BAKERS
 module.exports.registerRoutes = function(models, codes){
@@ -20,7 +21,11 @@ module.exports.registerRoutes = function(models, codes){
         else if(!baker) next({message: "You are dead to me!"})
         else {
           models.Order.find({baker: baker._id})
-            .populate('baker rider customer locality')
+
+            .populate('customer', 'address firstName lastName phone')
+            .populate('locality', 'name')
+            .populate('baker', '_id')
+            .populate('rider', '_id')
             .exec(function(err, orders){
               if(err) next(err);
               else {
@@ -34,11 +39,12 @@ module.exports.registerRoutes = function(models, codes){
   });
 
   router.post('/', function(req, res, next){
-
     console.log(req.body);
 
-    req.body.pUpDate = moment(req.body.pickUpDate, "DD-MM-YYYY HH:mm:ss");
-    req.body.dDate = moment(req.body.dropDate, "DD-MM-YYYY HH:mm:ss");
+    //req.body.pUpDate = moment(req.body.pickUpDate, "DD-MM-YYYY HH:mm:ss");
+    //req.body.dDate = moment(req.body.dropDate, "DD-MM-YYYY HH:mm:ss");
+
+
 
     models.Baker.findOne({user: req.body.user_id}, function(err, baker){
       if(err) next(err);
@@ -58,6 +64,10 @@ module.exports.registerRoutes = function(models, codes){
                 req.body.customer = customer._id;
                 var locality_id = req.body.locality._id;
                 req.body.locality = locality_id;
+
+                //var hashids = new Hashids();
+                //moment().format('ddMMYYYYhhmmssSSS');
+
                 new models.Order(req.body).save(function(err, order){
                   if(err) next(err);
                   else if(!order)   next({message: 'I\'ve failed you, master!'});

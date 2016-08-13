@@ -4,6 +4,7 @@ var login = require('connect-ensure-login');
 var order = require('./users/baker/order');
 var rate = require('./users/baker/rate');
 var locality = require('./users/baker/locality');
+var customer = require('./users/baker/customer');
 var router = express.Router();
 var crypto = require('crypto');
 
@@ -140,13 +141,7 @@ module.exports.registerRoutes = function(models, passport, multiparty, utils, oa
     router.use('/baker/order', preAuthenticate, authBaker, order.registerRoutes(models, codes));
     router.use('/baker/rate', preAuthenticate, authBaker, rate.registerRoutes(models, codes));
     router.use('/baker/locality', preAuthenticate, authBaker, locality.registerRoutes(models, codes));
-    router.get('/test', preAuthenticate, authBaker, function(req, res, next){
-      console.log("here");
-      console.log(req.get("x-access-token"));
-      res.status(200).send({message: "yolo"});
-    }, function(err, req, res, next){
-      next(err);
-    });
+    router.use('/baker/customer', preAuthenticate, authBaker, customer.registerRoutes(models, codes));
 
 
 

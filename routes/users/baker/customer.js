@@ -11,18 +11,26 @@ module.exports.registerRoutes = function(models, codes){
 
 
     models.Baker.findOne({user: req.body.user_id})
-      .populate('user')
       .exec(function(err, baker){
-        if(err) next();
-        else if(!baker) next({message: "You are dead to me!"})
+        if(err) next(err);
+        else if(!baker) next({error: "You are dead to me!", error_description:""})
         else {
-          models.Customer.find({baker: baker._id}, function(err, customers){
-            if(err) next(err);
-            else if(!customers) next({message: "All these customers be dead to me"});
-            else {
-              res.status(codes.OK).send(customers);
-            }
-          });
+          models.Customer.find({baker: baker._id})
+            .select({
+              "locality": 1,
+              "address": 1,
+              "firstName": 1,
+              "lastName": 1,
+              "phone": 1
+            })
+            .populate("locality", "name")
+            .exec(function(err, customers){
+              if(err) next(err);
+              else if(!customers) next({message: "All these customers be dead to me", error_description:""});
+              else {
+                res.status(codes.OK).send(customers);
+              }
+            });
         }
       });
 
