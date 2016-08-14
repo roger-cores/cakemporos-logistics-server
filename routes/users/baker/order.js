@@ -1,6 +1,8 @@
 var express = require('express');
 var moment = require('moment');
 var Hashids = require('hashids');
+var mongoose = require('mongoose');
+var ObjectId = require('mongodb').ObjectID;
 var router = express.Router();
 //Order related calls for BAKERS
 module.exports.registerRoutes = function(models, codes){
@@ -38,6 +40,62 @@ module.exports.registerRoutes = function(models, codes){
 
   });
 
+  router.put('/:orderid/ship', function(req, res, next){
+    models.Order.findOne({_id: req.params.orderid}, function(err, order){
+      if(err) next(err);
+      else if(!order){next({error: "You are dead to me!"});}
+      else {
+
+        if(order.status.valueOf() == "CAN".valueOf()){
+          res.status(codes.FORBIDDEN).send({error: "Action cannot be performed", error_description: "Order cannot be rolled back from Canceled to Shipped"})
+          return;
+        } else {
+          order.status = "DISP";
+          order.save(function(err, order){
+            if(err) next(err);
+            else if(!order) {next({error: "You are dead to me!"});}
+            else {
+              res.status(codes.CREATED).send({});
+            }
+          });
+        }
+
+
+      }
+    });
+  });
+
+  router.put('/:orderid/cancel', function(req, res, next){
+    models.Order.findOne({_id: req.params.orderid}, function(err, order){
+      if(err) next(err);
+      else if(!order){next({message: "You are dead to me!"});}
+      else {
+
+        if(order.status.valueOf() == "DEL".valueOf() || order.status.valueOf() == "DISP".valueOf()){
+          res.status(codes.FORBIDDEN).send({error: "Action cannot be performed", error_description: "Order is already dispatched/delivered"})
+        } else {
+          order.status = "CAN";
+          order.save(function(err, order){
+            if(err) next(err);
+            else if(!order) {next({error: "You are dead to me!"});}
+            else {
+              res.status(codes.CREATED).send({});
+            }
+          });
+        }
+
+
+
+      }
+    });
+  });
+
+
+
+  router.get('/test', function(req, res, next){
+    var code = getUniqueCode(8655814592);
+  });
+
   router.post('/', function(req, res, next){
     console.log(req.body);
 
@@ -46,58 +104,70 @@ module.exports.registerRoutes = function(models, codes){
 
 
 
-    models.Baker.findOne({user: req.body.user_id}, function(err, baker){
-      if(err) next(err);
-      else if(!baker) next({message: "I sentence thee to death, baker!"})
-      else {
-        req.body.baker = baker._id;
-        if(req.body.customer._id == null){
+    models.Baker.findOne({user: req.body.user_id})
+      .populate('user')
+      .exec(function(err, baker){
+        if(err) next(err);
+        else if(!baker) next({message: "I sentence thee to death, baker!"})
+        else {
+          req.body.baker = baker._id;
+          if(req.body.customer._id == null){
 
+              var locality_id = req.body.locality._id;
+              req.body.customer.locality = locality_id;
+              req.body.customer.baker = baker._id;
+              new models.Customer(req.body.customer).save(function(err, customer){
+                if(err) next(err);
+                else if(!customer) {next({message: "This customer is dead to me!"})}
+                else {
+
+                  req.body.customer = customer._id;
+                  var locality_id = req.body.locality._id;
+                  req.body.locality = locality_id;
+
+                  var id = new ObjectId();
+                  req.body._id = id;
+                  var hashids = new Hashids('yolo', 6);
+                  var uniqueOrderCode = hashids.encode(id);
+                  req.body.orderCode = "C" + uniqueOrderCode.toUpperCase();
+
+                  new models.Order(req.body).save(function(err, order){
+                    if(err) next(err);
+                    else if(!order)   next({message: 'I\'ve failed you, master!'});
+                    else {
+                      res.status(codes.CREATED).send({_id: order._id, __v: order.__v});
+                    }
+                  });
+                }
+              });
+
+
+
+
+          }
+          else {
+            var customer_id = req.body.customer._id;
+            req.body.customer = customer_id;
             var locality_id = req.body.locality._id;
-            req.body.customer.locality = locality_id;
-            req.body.customer.baker = baker._id;
-            new models.Customer(req.body.customer).save(function(err, customer){
+            req.body.locality = locality_id;
+
+            var id = new ObjectId();
+            req.body._id = id;
+            var hashids = new Hashids('yolo', 6);
+            var uniqueOrderCode = hashids.encode(id);
+            req.body.orderCode = "C" + uniqueOrderCode.toUpperCase();
+
+            new models.Order(req.body).save(function(err, order){
               if(err) next(err);
-              else if(!customer) {next({message: "This customer is dead to me!"})}
+              else if(!order)   next({message: 'order creation failed!'});
               else {
-
-                req.body.customer = customer._id;
-                var locality_id = req.body.locality._id;
-                req.body.locality = locality_id;
-
-                //var hashids = new Hashids();
-                //moment().format('ddMMYYYYhhmmssSSS');
-
-                new models.Order(req.body).save(function(err, order){
-                  if(err) next(err);
-                  else if(!order)   next({message: 'I\'ve failed you, master!'});
-                  else {
-                    res.status(codes.CREATED).send({_id: order._id, __v: order.__v});
-                  }
-                });
+                res.status(codes.CREATED).send(order);
               }
             });
-
-
-
+          }
 
         }
-        else {
-          var customer_id = req.body.customer._id;
-          req.body.customer = customer_id;
-          var locality_id = req.body.locality._id;
-          req.body.locality = locality_id;
-          new models.Order(req.body).save(function(err, order){
-            if(err) next(err);
-            else if(!order)   next({message: 'order creation failed!'});
-            else {
-              res.status(codes.CREATED).send(order);
-            }
-          });
-        }
-
-      }
-    });
+      });
 
 
   })

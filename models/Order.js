@@ -7,7 +7,7 @@ var ObjectId = Schema.ObjectId;
 
 var orderSchema = mongoose.Schema({
 
-  //orderCode: {type: Number, required: true},
+  orderCode: {type: String, required: true},
 
   baker: {type: ObjectId, ref: 'baker', required: true},
   rider: {type: ObjectId, ref: 'rider', required: false},
