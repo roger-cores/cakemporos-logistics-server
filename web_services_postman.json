@@ -1,0 +1,274 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Cakemporos | Logistics services",
+		"_postman_id": "703de379-4c37-bceb-c819-dbf6cfdc8693",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"description": "",
+			"item": [
+				{
+					"name": "Login with password",
+					"request": {
+						"url": "http://localhost:3000/api/user/oauth/token",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"rc123\",\n    \"password\": \"timex\",\n    \"client_id\": \"efOeHY5Ovf\",\n    \"client_secret\": \"r18sAsEsxR\",\n    \"grant_type\": \"password\"\n}"
+						},
+						"description": "Login with user and client app credentials"
+					},
+					"response": []
+				},
+				{
+					"name": "Validate Token",
+					"request": {
+						"url": "http://localhost:3000/api/user/validate-token",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"access_token\": \"CFLvAbMIzfwCVRo0M5Hcgg8W9BfEpNGXPCKsPuW5Ht3A7oDufZQOlU5p5p0OBRt1VHuLVr3ZP7HBLOcQpIRY3xywdKSRXcjaEGuMva0Lz1sdRzYP2k8rmMRXYQIJfngAhjZcETo3SdQMGTkUBqhhdQQKj7VgsX15EhXnhOT8yBhJf5NOQTQAUShVw5JzwgqZObV1MPlcvTvkcEa5reNKppCm8MpVaBq6XUTgtHvzkI9s4nW2h1x50kSrlTuZVUHd\",\n    \"client_id\": \"efOeHY5Ovf\",\n    \"client_secret\": \"r18sAsEsxR\",\n    \"grant_type\": \"access_token\"\n    \n}"
+						},
+						"description": "Validates a token"
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh a token",
+					"request": {
+						"url": "http://localhost:3000/api/user/oauth/token",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refresh_token\": \"ITEQu8c0VSqN53RyZRwtzMLE5LVnU9knJRLLcJT1ONszDjsEPglQ6kLZRXeEGXrFZOcTb6Tcvalq1d2lPrkqOrhS41DMaiC9IpaBRDSuWyCxKbuA9YhSeRcMX52vTPDordHE1kBezFPgwiEuQPEODuIY1GHqe2CwNpK2g1hRxAn2xcRt5YcxaRSHfvENGOUAS7M7ssAQ1PJ2yvmhJxVCAgyJCjKGckgJBlDa2VHxfkn7iUNiafmHMlyknB81yIAC\",\n    \"client_id\": \"efOeHY5Ovf\",\n    \"client_secret\": \"r18sAsEsxR\",\n    \"grant_type\": \"refresh_token\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Baker | Customer",
+			"description": "",
+			"item": [
+				{
+					"name": "BAKER | get customers by current baker",
+					"request": {
+						"url": "http://localhost:3000/api/user/baker/customer",
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "XmaUnOvQb0vUXieuDQTNuo1F5jSD6O0HqBRWd5mldBKW5g3Z8p8uXvW7hzkQeeevYYNM5JTvGYSEcSYPv6DWnc5fNe7QJ2MvhDoXiPojOPGOoCmE2sDMGxkPqed1WodVIGeJnneUDJraJPxOgCAZLhrrau9zM3Yx7Wkdy3GNPb7nkdkWocBMOXB3Wpvaz4imZpQvmS32OFxfaCxorEWGONb4zPPFpTqSVFjrwGGHo1rmtkObtNZDB9d9Eyi17YJz",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Baker | Locality",
+			"description": "",
+			"item": [
+				{
+					"name": "BAKER | get all localities",
+					"request": {
+						"url": "http://localhost:3000/api/user/baker/locality/",
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "4Dpv85FKzuBnMKMbiL0yWX88iAz2EZGsVmbwsG5pBeV4o3s53HGvZtmeEY9SnEIKv0OCL1bb12lLQR2WKX753jtiicEAfuriTWtfHRfE3LSpkXcwzRAJ4FujAyYgrSX8D4788cb1CoDKv1hxgIzKJaFKXv5aZF1NX8hBP1spkIHcmDFbXgxSFONbJDrHeYrxEkt6B6rDKlCfDIlhmipg8ZkZl4GljOFq2alWIATfhfIOAyizKhRKj9A2DhSv6kVr",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Baker | Order",
+			"description": "",
+			"item": [
+				{
+					"name": "BAKER | Get my orders",
+					"request": {
+						"url": "http://localhost:3000/api/user/baker/order/",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": "Get all orders for logged in baker"
+					},
+					"response": []
+				},
+				{
+					"name": "BAKER | Create Order",
+					"request": {
+						"url": "http://localhost:3000/api/user/baker/order/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "x-access-token",
+								"value": "4Dpv85FKzuBnMKMbiL0yWX88iAz2EZGsVmbwsG5pBeV4o3s53HGvZtmeEY9SnEIKv0OCL1bb12lLQR2WKX753jtiicEAfuriTWtfHRfE3LSpkXcwzRAJ4FujAyYgrSX8D4788cb1CoDKv1hxgIzKJaFKXv5aZF1NX8hBP1spkIHcmDFbXgxSFONbJDrHeYrxEkt6B6rDKlCfDIlhmipg8ZkZl4GljOFq2alWIATfhfIOAyizKhRKj9A2DhSv6kVr",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"PEN\",\n    \"cakeType\": \"Customized\",\n    \"cost\": 1200,\n    \"pickUpDate\": \"12/01/2017 21:53:00\",\n    \"dropDate\": \"12/01/2017 23:00:00\",\n    \"altPhone\": 8655814592,\n    \"weight\": \"ONE\",\n    \"address\": \"YalaGaadh!\",\n    \"locality\": {\n        \"name\": \"Maheshvari\",\n        \"_id\": \"57af2ed082a06c8e40ad2902\"\n    },\n    \n    \"customer\": {\n    \n        \"locality\": {\n            \"name\": \"Maheshvari\",\n            \"_id\": \"579de1be1995c61b1c1cfb2a\"\n        },\n        \"address\": \"TyaalaGaadh!\",\n        \n        \"firstName\": \"Roger\",\n        \"lastName\": \"Cores\",\n        \"phone\": 8655814592\n        \n    },\n    \n    \n    \"dropAltPhone\": 7506908493\n    \n    \n}"
+						},
+						"description": "book delivery for baker"
+					},
+					"response": []
+				},
+				{
+					"name": "BAKER | Ship Order",
+					"request": {
+						"url": "http://localhost:3000/api/user/baker/order/57af97cce7cdf47e65439773/ship",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "gTdBJlAunimXRy6RKxIwbo5LBMRtLuRteKFXrdPmNfOfo4RK7hprA1y8cXwNxhlEkjPqVLsxwoY5Pk45qoVqldWfVxIG9pRiNfZzwiZaIQkEM839YJuxYDSdu9LTFnsIXJg5bCmEeIBdDWVXgDtky7qudQ8DpNZ3pahr12VjpeifBrkb3KCOyC6LJuzH6LMq0th8Cf4whf7dbI7VJJQVCF8H78dp2mlFvRP78x6hEaLpjJmFlwAgpNGAz2DffP0j",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "BAKER | Cancel Order",
+					"request": {
+						"url": "http://localhost:3000/api/user/baker/order/57af93ade7cdf47e65439772/cancel",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "gTdBJlAunimXRy6RKxIwbo5LBMRtLuRteKFXrdPmNfOfo4RK7hprA1y8cXwNxhlEkjPqVLsxwoY5Pk45qoVqldWfVxIG9pRiNfZzwiZaIQkEM839YJuxYDSdu9LTFnsIXJg5bCmEeIBdDWVXgDtky7qudQ8DpNZ3pahr12VjpeifBrkb3KCOyC6LJuzH6LMq0th8Cf4whf7dbI7VJJQVCF8H78dp2mlFvRP78x6hEaLpjJmFlwAgpNGAz2DffP0j",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Baker | Rates",
+			"description": "",
+			"item": [
+				{
+					"name": "BAKER | get rates",
+					"request": {
+						"url": "http://localhost:3000/api/user/baker/rate",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": "Get all rates"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Rider | Order",
+			"description": "",
+			"item": [
+				{
+					"name": "RIDER | Get Orders assigned to me",
+					"request": {
+						"url": "http://localhost:3000/api/user/rider/order/",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "RIDER | Deliver Order",
+					"request": {
+						"url": "http://localhost:3000/api/user/rider/order/57b0c737235ecd94380d41d9/deliver",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "HFIcm5F7GnoabOGem6jEdcgIJjocbPDBIMy4WTmNv5fK84DBQ8BVmvJwRi5AkwaLwAqG3qi7iPEEHpLWdtRSYtJzd2hqW74IDl4SI3dyOkn2aHOYRFPB38JJJEFuwafL2BX9I8u5BZgIDgfTPtgfvRNID9vSTr9IRRqMrqCb4DwjBwSGv5qYWGe8B12I1jsMV9ogqMBRL53iKYfaGCjCkUTo9HvLykjExtXkJPmRI4HPfncs34cBu7rjpdTCCNqw",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

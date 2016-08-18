@@ -5,7 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var passport = require('passport');
-var routes = require('./routes/index');
+//var routes = require('./routes/index');
 var userRoute = require('./routes/users');
 var mongoose = require('mongoose');
 var session = require('express-session');
@@ -20,12 +20,13 @@ var nodeUtils = require('util');
 var oauth = require('./oauth');
 var app = express();
 var codes = require('./codes.json');
+var admin = require('./routes/admin/admin');
 
 var multiparty = require('multiparty');
 //set to qa server
-connector(mongoose, dbaseConfig.qa);
+connector(mongoose, dbaseConfig.clientuat);
 //<------ uncomment the following to re-init database from scratch  ------>
-//seed(models, require('mongodb').ObjectID);
+seed(models, require('mongodb').ObjectID);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -47,8 +48,10 @@ app.use(flash());
 
 require('./config/passport')(passport);
 
-
-app.use('/', routes);
+app.get('/admin', function(req, res, next){
+  res.render('login', {});
+});
+app.use('/admin', admin.registerRoutes(models, codes));
 app.use('/api/user', userRoute.registerRoutes(models, passport, multiparty, utils, oauth, codes));
 
 
@@ -68,9 +71,11 @@ app.use(function(req, res, next) {
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
     console.log(err);
+    var message = "Unknown";
+    if(!err || !err.message){message = err.message;}
     res.status(err.status || 500).send({
-      error: err.message,
-      error_description: err
+      error: message,
+      error_description: JSON.stringify(err)
     });
   });
 }

@@ -9,8 +9,9 @@ var riderSchema = mongoose.Schema({
 
   user: {type: ObjectId, ref: 'login', required: true, unique: true},
   status: {type: String, required: true, default: "GREEN"},
-  order1: {type: ObjectId,ref:'order', required: false},
-  order2: {type: ObjectId, ref:'order', required: false}
+  order1: {type: ObjectId, ref:'order', required: false},
+  order2: {type: ObjectId, ref:'order', required: false},
+  vehicleNumber: {type: String, required: true}
 
 
 });

@@ -1,7 +1,38 @@
 doctype html
-html
+html(ng-app='galvanie')
   head
     title= title
+    meta(name='viewport', content="width=device-width, initial-scale=1.0")
     link(rel='stylesheet', href='/stylesheets/style.css')
-  body
-    block content
+    link(rel='stylesheet', href='/bower_components/angular-material/angular-material.css')
+
+  body(layout='column')
+
+    md-content(layout='column')
+      md-toolbar(layout='row')
+        .md-toolbar-tools.top-navbar(ng-controller='AuthCheckerCtrl')
+              md-button.md-icon-button(aria-label='Menu', ng-href='/')
+                md-icon(md-svg-icon='/images/heart.svg')
+              h2
+                span Cakemporos Logistics Admin Panel
+                span
+              span(flex='')
+              md-button(aria-label='Log in', ng-show='showLogin', ng-href='/login') Log in
+              md-button(aria-label='Log out', ng-show='showLogout', ng-click='logout()') Log out
+
+
+      script(src='/bower_components/jquery/dist/jquery.js')
+      script(src='/bower_components/angular/angular.js')
+      script(src='/bower_components/angular-material/angular-material.js')
+      script(src='/bower_components/angular-animate/angular-animate.js')
+      script(src='/bower_components/angular-aria/angular-aria.js')
+      script(src='/bower_components/angular-cookies/angular-cookies.js')
+      script(src='/bower_components/angular-messages/angular-messages.js')
+      script(src='/bower_components/angular-resource/angular-resource.js')
+      script(src='/bower_components/angular-route/angular-route.js')
+      script(src='/bower_components/angular-sanitize/angular-sanitize.js')
+      script(src='/bower_components/ngstorage/ngStorage.js')
+      script(src='/bower_components/moment/min/moment.min.js')
+      script(src='/javascripts/controllers/app.js')
+      script(src='/javascripts/controllers/authCheckerCtrl.js')
+      block content

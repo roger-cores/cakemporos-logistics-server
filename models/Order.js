@@ -8,11 +8,12 @@ var ObjectId = Schema.ObjectId;
 var orderSchema = mongoose.Schema({
 
   orderCode: {type: String, required: true},
+  referalCode: {type: String, required: true},
 
   baker: {type: ObjectId, ref: 'baker', required: true},
   rider: {type: ObjectId, ref: 'rider', required: false},
 
-  status: {type: String, required: true, default: "PEN"},
+  status: {type: String, required: true, default: "PENDING"},
 
   cakeType: {type: String, required: true},
   cost: {type: Number, required: true},
@@ -43,7 +44,7 @@ Order.schema.path('cakeType').validate(function(value){
 }, 'Invalid OrderType');
 
 Order.schema.path('status').validate(function(value){
-	return /PEN|DISP|CAN|DEL/.test(value);
+	return /CANCELLED|DISPATCHED|DELIVERED|READY|PENDING/.test(value);
 }, 'Invalid Order Status');
 
 

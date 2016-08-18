@@ -1,0 +1,22 @@
+extends layout
+
+block content
+  div(ng-controller='LoginCtrl')
+
+    md-card(layout='column', style='margin:auto;max-width:500px;min-width:300px;padding: 5px;')
+      form(name='authform')
+        md-input-container.md-block
+          label Email
+          input(ng-model='email', required, name='username')
+          div(ng-messages='authform.username.$error')
+            div(ng-message-exp="['required']") email is required
+        md-input-container.md-block
+          label Password
+          input(type='password', name='password', ng-model='password', required)
+          div(ng-messages='authform.password.$error')
+            div(ng-message='required') password is required
+
+      md-card-actions(layout='row', layout-align='center')
+        md-button.md-raised.md-primary(ng-click='login()', ng-disabled='authform.$invalid') Login
+
+  script(src='/javascripts/controllers/main.js')

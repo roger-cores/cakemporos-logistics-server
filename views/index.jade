@@ -1,5 +1,11 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  ng-include(ng-controller='IndexCtrl', src='target')
+
+  script(src='javascripts/controllers/index.js')
+  script(src='/javascripts/controllers/org-home.js')
+  script(src='/javascripts/controllers/bb.js')
+  script(src='/javascripts/controllers/user.js')
+  script(src='/javascripts/master-data-manager.js')
+  script(src='/bower_components/moment/min/moment.min.js')
