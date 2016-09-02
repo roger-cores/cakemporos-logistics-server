@@ -38,14 +38,26 @@ module.exports = function(models, ObjectId){
     }
 
     var rate1 = {
-      name: "5km",
-      value: 50
+      name: "NORMAL 5",
+      value: 500
     }
 
     var rate2 = {
-      name: "more",
+      name: "NORMAL MORE",
+      value: 100
+    }
+
+    var rate11 = {
+      name: "EXPRESS 5",
+      value: 650
+    }
+
+    var rate22 = {
+      name: "EXPRESS MORE",
       value: 150
     }
+
+    
 
     var localities = [{"name": "IC Colony, Borivali", _id: new ObjectId()},{"name": "Anand Nagar, Thane"},{"name": "Kandarpada, Dahisar"}];
 
@@ -64,7 +76,8 @@ module.exports = function(models, ObjectId){
       _id: new ObjectId(),
       user: newId._id,
       locality: localities[0]._id,
-      address: "yalagaadh"
+      address: "yalagaadh",
+      referal: "XLS345"
     }
 
     new models.Baker(baker).save(callback);
@@ -146,6 +159,8 @@ module.exports = function(models, ObjectId){
     new models.City(city).save(callback);
     new models.Rate(rate1).save(callback);
     new models.Rate(rate2).save(callback);
+    new models.Rate(rate11).save(callback);
+    new models.Rate(rate22).save(callback);
 
     for(var i=0; i<localities.length; i++){
       new models.Locality(localities[i]).save(callback);

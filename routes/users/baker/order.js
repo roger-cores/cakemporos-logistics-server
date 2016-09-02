@@ -65,6 +65,31 @@ module.exports.registerRoutes = function(models, codes){
     });
   });
 
+router.put('/:orderid/ready', function(req, res, next){
+    models.Order.findOne({_id: req.params.orderid}, function(err, order){
+      if(err) next(err);
+      else if(!order){next({error: "You are dead to me!"});}
+      else {
+
+        if(order.status.valueOf() == "CANCELLED".valueOf()){
+          res.status(codes.FORBIDDEN).send({error: "Action cannot be performed", error_description: "Order cannot be rolled back from Canceled to Shipped"})
+          return;
+        } else {
+          order.status = "READY";
+          order.save(function(err, order){
+            if(err) next(err);
+            else if(!order) {next({error: "You are dead to me!"});}
+            else {
+              res.status(codes.CREATED).send({});
+            }
+          });
+        }
+
+
+      }
+    });
+  });
+
   router.put('/:orderid/cancel', function(req, res, next){
     models.Order.findOne({_id: req.params.orderid}, function(err, order){
       if(err) next(err);

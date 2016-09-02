@@ -9,7 +9,8 @@ var bakerSchema = mongoose.Schema({
 
   user: {type: ObjectId, ref: 'login', required: true, unique: true},
   locality: {type: ObjectId, ref: 'locality', required: true},
-  address: {type: String, required: true}
+  address: {type: String, required: true},
+  referal: {type: String, required: true}
 
 
 });

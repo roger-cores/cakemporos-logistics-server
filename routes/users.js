@@ -125,13 +125,14 @@ module.exports.registerRoutes = function(models, passport, multiparty, utils, oa
               }
             });
           } else {
-            models.Baker.find({user: req.body.user_id})
-              .select('locality address')
+            models.Baker.findOne({user: req.body.user_id})
+              .select('locality address referal')
               .populate('locality')
               .exec(function(err, baker){
                 if(err) next(err);
                 else {
-                  res.status(codes.OK).send({user: user, baker: baker});
+                  baker.user = user;
+                  res.status(codes.OK).send(baker);
                 }
               });
           }
