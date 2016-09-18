@@ -3,9 +3,11 @@ var moment = require('moment');
 var shortid = require('shortid');
 var mongoose = require('mongoose');
 var ObjectId = require('mongodb').ObjectID;
+var FCM = require('fcm-push');
 var router = express.Router();
+
 //Order related calls for BAKERS
-module.exports.registerRoutes = function(models, codes){
+module.exports.registerRoutes = function(models, codes, fcm_config){
 
 
   //get all my orders | latest first
@@ -80,6 +82,45 @@ router.put('/:orderid/ready', function(req, res, next){
             if(err) next(err);
             else if(!order) {next({error: "You are dead to me!"});}
             else {
+
+              models.Rider.findOne({_id: order.rider})
+                .exec(function(err, rider){
+                  if(err) {console.log(err); console.log("ready notif wasn't sent to the rider");}
+                  else if(!rider){console.log("ready notif wasn't sent to the rider");}
+                  else{
+                    models.ID.findOne({_id: rider.user})
+                      .exec(function(err, id){
+                        if(err) {console.log(err); console.log("ready notif to rider wasn't sent");}
+                        else if(!id) {console.log("ready notif to rider wasn't sent")}
+                        else {
+                          var fcm = new FCM(fcm_config.server_key);
+
+                          var message = {
+                              to: id.registrationKey, // required
+                              collapse_key: "rider_order_status" + order.orderCode,
+                              data: {
+                                  scope: 'rider',
+                                  message: 'ready',
+                                  title: 'Order: '+ order.orderCode +' is ready',
+                                  body:   moment(Date.now(), "HH:mm:ss") + ': Order is ready'
+                              }
+                          };
+
+                          fcm.send(message, function(err, response){
+                              if (err) {
+                                  console.log(err);
+                                  console.log("Something has gone wrong!");
+                                  //res.json({msg: "Something has gone wrong!"});
+                              } else {
+                                  console.log("Successfully sent with response: ", response);
+                                  //res.json({msg: "Successfully sent with response: ", response});
+                              }
+                          });
+                        }
+                      });
+                  }
+                });
+
               res.status(codes.CREATED).send({});
             }
           });
@@ -104,6 +145,46 @@ router.put('/:orderid/ready', function(req, res, next){
             if(err) next(err);
             else if(!order) {next({error: "You are dead to me!"});}
             else {
+
+              models.Rider.findOne({_id: order.rider})
+                .exec(function(err, rider){
+                  if(err) {console.log(err); console.log("cancel notif wasn't sent to the rider");}
+                  else if(!rider){console.log("cancel notif wasn't sent to the rider");}
+                  else{
+                    models.ID.findOne({_id: rider.user})
+                      .exec(function(err, id){
+                        if(err) {console.log(err); console.log("cancel notif to rider wasn't sent");}
+                        else if(!id) {console.log("cancel notif to rider wasn't sent")}
+                        else {
+                          var fcm = new FCM(fcm_config.server_key);
+
+                          var message = {
+                              to: id.registrationKey, // required
+                              collapse_key: "rider_order_status" + order.orderCode,
+                              data: {
+                                  scope: 'rider',
+                                  message: 'cancel',
+                                  title: 'Order: '+ order.orderCode +' was cancelled',
+                                  body: moment(Date.now(), "HH:mm:ss") + ': Order is cancelled'
+                              }
+                          };
+
+                          fcm.send(message, function(err, response){
+                              if (err) {
+                                  console.log(err);
+                                  console.log("Something has gone wrong!");
+                                  //res.json({msg: "Something has gone wrong!"});
+                              } else {
+                                  console.log("Successfully sent with response: ", response);
+                                  //res.json({msg: "Successfully sent with response: ", response});
+                              }
+                          });
+                        }
+                      });
+                  }
+                });
+
+
               res.status(codes.CREATED).send({});
             }
           });
@@ -117,9 +198,7 @@ router.put('/:orderid/ready', function(req, res, next){
 
 
 
-  router.get('/test', function(req, res, next){
-    var code = getUniqueCode(8655814592);
-  });
+
 
   var saveDocuments = function(done, order, rider, next){
     console.log("rider: " + rider);
@@ -127,6 +206,38 @@ router.put('/:orderid/ready', function(req, res, next){
       if(err) next(err);
       else if(!rider){next({error: "Internal", error_description: "Internal Error"});}
       else {
+
+        models.ID.findOne({_id: rider.user})
+          .exec(function(err, id){
+            if(err) {console.log(err); console.log("notif to rider wasn't sent");}
+            else if(!id) {console.log("notif to rider wasn't sent")}
+            else {
+              var fcm = new FCM(fcm_config.server_key);
+
+              var message = {
+                  to: id.registrationKey, // required
+                  collapse_key: "rider_order_status" + order.orderCode,
+                  data: {
+                      scope: 'rider',
+                      message: 'assigned',
+                      title: 'New Order: ' + order.orderCode,
+                      body: moment(Date.now(), "HH:mm:ss") + ': Order is assigned to you'
+                  }
+              };
+
+              fcm.send(message, function(err, response){
+                  if (err) {
+                      console.log(err);
+                      console.log("Something has gone wrong!");
+                      //res.json({msg: "Something has gone wrong!"});
+                  } else {
+                      console.log("Successfully sent with response: ", response);
+                      //res.json({msg: "Successfully sent with response: ", response});
+                  }
+              });
+            }
+          });
+
         done(order);
       }
     });

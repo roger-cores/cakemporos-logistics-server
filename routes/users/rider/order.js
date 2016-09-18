@@ -19,7 +19,7 @@ module.exports.registerRoutes = function(models, codes){
         if(err) next();
         else if(!rider) next({message: "You are dead to me!"})
         else {
-          models.Order.find({rider: rider._id})
+          models.Order.find({rider: rider._id, "status": {"$ne": "CANCELLED"}})
 
             .populate('customer', 'address firstName lastName phone')
             .populate('locality', 'name')
@@ -53,6 +53,47 @@ module.exports.registerRoutes = function(models, codes){
             if(err) next(err);
             else if(!order) {next({error: "You are dead to me!"});}
             else {
+
+
+              models.Baker.findOne({_id: order.baker})
+                .exec(function(err, baker){
+                  if(err) {console.log(err); console.log("delivered notif wasn't sent to the baker");}
+                  else if(!baker) {console.log("delivered notif wasn't sent to the baker");}
+                  else {
+                    models.ID.findOne({_id: baker.user})
+                      .exec(function(err, id){
+                        if(err) {console.log(err); console.log("delivered notif wasn't sent to the baker");}
+                        else if(!id) {console.log("delivered notif wasn't sent to the baker")}
+                        else {
+                          var fcm = new FCM(fcm_config.server_key);
+
+                          var message = {
+                              to: id.registrationKey, // required
+                              collapse_key: "baker_order_status" + order.orderCode,
+                              data: {
+                                  scope: 'baker',
+                                  message: 'delivered',
+                                  title: 'Order: ' + order.orderCode + ' delivered',
+                                  body: moment(Date.now(), "HH:mm:ss") + ': Order is delivered'
+                              }
+                          };
+
+                          fcm.send(message, function(err, response){
+                              if (err) {
+                                  console.log(err);
+                                  console.log("Something has gone wrong!");
+                                  //res.json({msg: "Something has gone wrong!"});
+                              } else {
+                                  console.log("Successfully sent with response: ", response);
+                                  //res.json({msg: "Successfully sent with response: ", response});
+                              }
+                          });
+                        }
+                      });
+                  }
+                });
+
+
               res.status(codes.CREATED).send({});
             }
           });

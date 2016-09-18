@@ -20,8 +20,9 @@ var nodeUtils = require('util');
 var oauth = require('./oauth');
 var app = express();
 var codes = require('./codes.json');
+var fcm_config = require('./fcm_config.json');
 var admin = require('./routes/admin/admin');
-
+var FCM = require('fcm-push');
 var multiparty = require('multiparty');
 //set to qa server
 connector(mongoose, dbaseConfig.clientuat);
@@ -52,9 +53,36 @@ app.get('/admin', function(req, res, next){
   res.render('login', {});
 });
 app.use('/admin', admin.registerRoutes(models, codes));
-app.use('/api/user', userRoute.registerRoutes(models, passport, multiparty, utils, oauth, codes));
+app.use('/api/user', userRoute.registerRoutes(models, passport, multiparty, utils, oauth, codes, fcm_config));
 
 
+app.get('/testpush', function(req, res, next){
+  var serverKey = 'AIzaSyDqDUDaP-3EvHitftoyscYG3hCv0oJCSzI';
+  var fcm = new FCM(serverKey);
+
+  var message = {
+      to: 'fxISnvSuuME:APA91bFRawRIOqKEnqmqeRO3U0Sz3oryh8mMZYuZpMJX3GZ4jo70AKRWgiVNgQ-RGwFjrKsQYAkiWvL5Wq-3NJ-OsoF_823-xZUMBinll-D1Q90wohEr-Cpfh_t-ymdQ7TtKIKhcM5QM', // required
+      data: {
+          data1: 'this is data one',
+          data2: 'this is data two'
+      },
+      notification: {
+          title: 'Title of your push notification',
+          body: 'Body of your push notification'
+      }
+  };
+
+  fcm.send(message, function(err, response){
+      if (err) {
+          console.log(err);
+          console.log("Something has gone wrong!");
+          res.json({msg: "Something has gone wrong!"});
+      } else {
+          console.log("Successfully sent with response: ", response);
+          res.json({msg: "Successfully sent with response: ", response});
+      }
+  });
+});
 
 
 // catch 404 and forward to error handler

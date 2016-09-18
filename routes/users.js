@@ -8,9 +8,11 @@ var locality = require('./users/baker/locality');
 var customer = require('./users/baker/customer');
 var router = express.Router();
 var crypto = require('crypto');
+var FCM = require('fcm-push');
 
 
-module.exports.registerRoutes = function(models, passport, multiparty, utils, oauth, codes) {
+
+module.exports.registerRoutes = function(models, passport, multiparty, utils, oauth, codes, fcm_config) {
 
 
 
@@ -107,10 +109,59 @@ module.exports.registerRoutes = function(models, passport, multiparty, utils, oa
 				user.password = user.generateHash(req.body.newpassword);
 				user.save(function(err){
 					if(err) next(err);
-					else res.status(codes.CREATED).send({code: 1, id: user._id});
+					else res.status(codes.CREATED).send({code: 1, _id: user._id});
 				});
 			})(req, res, next);
 		});
+
+    router.put('/updateReg', preAuthenticate, function(req, res, next){
+      models.ID.findOne({_id: req.body.user_id}, function(err, user){
+        if(err) next(err);
+        else if(!user){res.status(codes.NOT_FOUND).send({code:0})}
+        else {
+
+          if(user.registrationKey){
+
+            if(user.registrationKey == req.body.registrationKey){
+              res.status(codes.OK).send({code: 1});
+              return;
+            }
+
+            var fcm = new FCM(fcm_config.server_key);
+
+            var message = {
+                to: user.registrationKey, // required
+                data: {
+                    scope: 'deregister',
+                    title: 'You are logged out',
+                    body: 'Because you logged in on with a different device'
+                }
+            };
+
+            fcm.send(message, function(err, response){
+                if (err) {
+                    console.log(err);
+                    console.log("Something has gone wrong!");
+                    //res.json({msg: "Something has gone wrong!"});
+                } else {
+                    console.log("Successfully sent with response: ", response);
+                    //res.json({msg: "Successfully sent with response: ", response});
+                }
+            });
+
+          }
+
+          console.log("registrationKey" + req.body.registrationKey);
+
+          user.registrationKey = req.body.registrationKey;
+          user.save(function(err){
+            if(err) next(err);
+            else res.status(codes.CREATED).send({code: 1, _id: user._id});
+          });
+        }
+      });
+    });
+
 
     router.get('/userinfo', preAuthenticate, function(req, res, next){
       models.ID.findOne({_id: req.body.user_id}, 'name phone email userType', function(err, user){
@@ -118,12 +169,16 @@ module.exports.registerRoutes = function(models, passport, multiparty, utils, oa
         else {
           console.log(user.userType);
           if(user.userType == "RIDER"){
-            models.Rider.find({user: req.body.user_id}, 'vehicleNumber', function(err, rider){
-              if(err) next(err);
-              else {
-                res.status(codes.OK).send({user: user, rider: rider});
-              }
-            });
+
+            models.Rider.findOne({user: req.body.user_id})
+              .select('vehicleNumber')
+              .exec(function(err, rider){
+                if(err) next(err);
+                else {
+                  rider.user = user;
+                  res.status(codes.OK).send(rider);
+                }
+              });
           } else {
             models.Baker.findOne({user: req.body.user_id})
               .select('locality address referal')
@@ -136,13 +191,6 @@ module.exports.registerRoutes = function(models, passport, multiparty, utils, oa
                 }
               });
           }
-
-          // models.Rider.findOne({user: req.body.user_id}, 'vehicleNumber', function(err, rider){
-          //   if(err) next(err);
-          //   else {
-          //     res.status(codes.OK).send({user: user, rider: rider});
-          //   }
-          // });
         }
       });
     });
@@ -170,10 +218,10 @@ module.exports.registerRoutes = function(models, passport, multiparty, utils, oa
 
 
     //register calls for order | BAKER | Authentication needed
-    router.use('/baker/order', preAuthenticate, authBaker, order.registerRoutes(models, codes));
-    router.use('/baker/rate', preAuthenticate, authBaker, rate.registerRoutes(models, codes));
-    router.use('/baker/locality', preAuthenticate, authBaker, locality.registerRoutes(models, codes));
-    router.use('/baker/customer', preAuthenticate, authBaker, customer.registerRoutes(models, codes));
+    router.use('/baker/order', preAuthenticate, authBaker, order.registerRoutes(models, codes, fcm_config));
+    router.use('/baker/rate', preAuthenticate, authBaker, rate.registerRoutes(models, codes, fcm_config));
+    router.use('/baker/locality', preAuthenticate, authBaker, locality.registerRoutes(models, codes, fcm_config));
+    router.use('/baker/customer', preAuthenticate, authBaker, customer.registerRoutes(models, codes, fcm_config));
 
 
 
