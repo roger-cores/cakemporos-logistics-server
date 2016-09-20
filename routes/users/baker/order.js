@@ -42,6 +42,30 @@ module.exports.registerRoutes = function(models, codes, fcm_config){
 
   });
 
+  router.get('/:orderid', function(req, res, next){
+    models.Order.findOne({_id: req.params.orderid})
+      .populate('customer', 'address firstName lastName phone')
+      .populate('locality', 'name')
+      .populate('baker', '_id')
+      .populate('rider', '_id user')
+      .exec(function(err, order){
+        if(err) next(err);
+        else if(!order) {next({error: "You are dead to me!"});}
+        else {
+          models.Rider.findOne({_id: order.rider})
+            .populate('user', 'name email phone')
+            .exec(function(err, rider){
+              if(err) next(err);
+              else if(!rider) {next({error: "You are dead to me!"});}
+              else {
+                order.rider = rider;
+                res.status(codes.OK).send(order);
+              }
+            });
+        }
+      });
+  });
+
   router.put('/:orderid/ship', function(req, res, next){
     models.Order.findOne({_id: req.params.orderid}, function(err, order){
       if(err) next(err);
