@@ -14,6 +14,8 @@ var userSchema = mongoose.Schema({
     email        : {type: String, unique: true, required: true},
     password     : {type: String, unique: false, required: true},
 
+    otpSessionId : {type: String, unique: false, required: false},
+
     registrationKey : {type: String, unique: false, required: false},
 
     // facebook         : {

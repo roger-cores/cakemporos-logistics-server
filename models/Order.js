@@ -30,7 +30,13 @@ var orderSchema = mongoose.Schema({
   customer: {type: ObjectId, ref: 'customer', required: true},
   dropAltPhone: {type:Number, required: false},
 
-  createOrderDate: {type: Date, required: true, default: Date.now}
+  createOrderDate: {type: Date, required: true, default: Date.now},
+
+  trk : [{
+    timestamp: {type: Date, required: true},
+    latitude : {type: String, required: true},
+    longitude : {type: String, required: true}
+     }]
 
 });
 

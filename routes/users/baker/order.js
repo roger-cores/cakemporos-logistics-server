@@ -4,6 +4,7 @@ var shortid = require('shortid');
 var mongoose = require('mongoose');
 var ObjectId = require('mongodb').ObjectID;
 var FCM = require('fcm-push');
+var geolib = require('geolib');
 var router = express.Router();
 
 //Order related calls for BAKERS
@@ -40,6 +41,28 @@ module.exports.registerRoutes = function(models, codes, fcm_config){
       });
 
 
+  });
+
+
+  router.get('/:orderid/total', function(req, res, next){
+    models.Order.findOne({_id: req.params.orderid})
+      .select('trk')
+      .exec(function(err, order){
+        console.log('here');
+        if(err) next(err);
+        else if(!order) {res.status(codes.NOT_FOUND).send({error: "You are dead to me!"});}
+        else {
+          var geopoints = new Array();
+          for(var i=0; i<order.trk.length; i++){
+            geopoints.push({latitude: order.trk[i].latitude, longitude: order.trk[i].longitude});
+          }
+          if(order.trk.length != 0)
+            var distance = geolib.getPathLength(geopoints);
+          else distance = 0;
+          console.log(distance);
+          res.status(codes.OK).send({code: 1, distance: distance});
+        }
+      });
   });
 
   router.get('/:orderid', function(req, res, next){
@@ -125,8 +148,8 @@ router.put('/:orderid/ready', function(req, res, next){
                               data: {
                                   scope: 'rider',
                                   message: 'ready',
-                                  title: 'Order: '+ order.orderCode +' is ready',
-                                  body:   moment(Date.now(), "HH:mm:ss") + ': Order is ready'
+                                  title: 'Order status updated',
+                                  body:   order.orderCode + ' is ready'
                               }
                           };
 
@@ -188,8 +211,8 @@ router.put('/:orderid/ready', function(req, res, next){
                               data: {
                                   scope: 'rider',
                                   message: 'cancel',
-                                  title: 'Order: '+ order.orderCode +' was cancelled',
-                                  body: moment(Date.now(), "HH:mm:ss") + ': Order is cancelled'
+                                  title: 'Order status updated',
+                                  body:   order.orderCode + ' has been cancelled'
                               }
                           };
 
@@ -244,8 +267,8 @@ router.put('/:orderid/ready', function(req, res, next){
                   data: {
                       scope: 'rider',
                       message: 'assigned',
-                      title: 'New Order: ' + order.orderCode,
-                      body: moment(Date.now(), "HH:mm:ss") + ': Order is assigned to you'
+                      title: 'Order status updated',
+                      body:   order.orderCode + ' has been assigned to you'
                   }
               };
 

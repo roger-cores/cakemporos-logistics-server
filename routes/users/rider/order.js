@@ -4,7 +4,7 @@ var shortid = require('shortid');
 var mongoose = require('mongoose');
 var ObjectId = require('mongodb').ObjectID;
 var router = express.Router();
-//Order related calls for BAKERS
+//Order related calls for Riders
 module.exports.registerRoutes = function(models, codes){
 
 
@@ -73,8 +73,8 @@ module.exports.registerRoutes = function(models, codes){
                               data: {
                                   scope: 'baker',
                                   message: 'delivered',
-                                  title: 'Order: ' + order.orderCode + ' delivered',
-                                  body: moment(Date.now(), "HH:mm:ss") + ': Order is delivered'
+                                  title: 'Order status updated',
+                                  body:   order.orderCode + ' has been delivered'
                               }
                           };
 
@@ -103,6 +103,39 @@ module.exports.registerRoutes = function(models, codes){
       }
     });
   });
+
+
+  router.post('/:orderid/location', function(req, res, next){
+    //body{lat: number, longi: number}
+    models.Order.findOne({_id: req.params.orderid})
+      .exec(function(err, order){
+        if(err) next(err);
+        else if(!order) {res.status(codes.NOT_FOUND).send({error: "You are dead to me!"});}
+        else {
+          if(req.body && req.body.latitude && req.body.longitude){
+            req.body.timestamp = Date.now();
+            console.log(req.body);
+            order.trk.push(req.body);
+            order.save(function(err){
+              if(err)
+                next(err);
+              else {
+                res.status(codes.CREATED).send({code: 1});
+              }
+            });
+
+
+
+
+          }
+          else {
+            res.status(codes.SERVER_ERROR).send({error: "Internal Server Error"});
+          }
+
+        }
+      });
+  });
+
 
   return router;
 }

@@ -9,6 +9,8 @@ var customer = require('./users/baker/customer');
 var router = express.Router();
 var crypto = require('crypto');
 var FCM = require('fcm-push');
+var Client = require('node-rest-client').Client;
+var client = new Client();
 
 
 
@@ -95,7 +97,80 @@ module.exports.registerRoutes = function(models, passport, multiparty, utils, oa
 
 
 
+    router.get('/forgot-pass/:email', function(req, res, next){
+      models.ID.findOne({email: req.params.email})
+        .select('phone')
+        .exec(function(err, id){
+          if(err){next(err);}
+          else if(!id){res.status(codes.NOT_FOUND).send({error: "You are dead to me"});}
+          else {
+            res.status(codes.OK).send({code: 1});
+            console.log('here');
+            client.get("http://2factor.in/API/V1/5a885f05-8020-11e6-a584-00163ef91450/SMS/" + id.phone + "/AUTOGEN", function (data, response) {
+                // parsed response body as js object
+                console.log(data);
+                // raw response
+                console.log(response);
 
+                if(data){
+                  id.otpSessionId = data.Details;
+                  id.save(function(err){
+                    if(err) {console.log(err);}
+                  });
+                }
+            });
+            console.log('there');
+
+
+          }
+        });
+    });
+
+    router.get('/verify-otp/:email/:input', function(req, res, next){
+      models.ID.findOne({email: req.params.email})
+        .select('otpSessionId phone')
+        .exec(function(err, id){
+          if(err){next(err);}
+          else if(!id){res.status(codes.NOT_FOUND).send({error: "You are dead to me"});}
+          else {
+
+            client.get("http://2factor.in/API/V1/5a885f05-8020-11e6-a584-00163ef91450/SMS/VERIFY/" + id.otpSessionId + "/" + req.params.input, function (data, response) {
+                // parsed response body as js object
+                console.log(data);
+                // raw response
+                console.log(response);
+                //notif to device
+                if(!data){
+                  res.status(codes.NOT_FOUND).send({error: "You are dead to me"});
+                } else {
+                  if(data.Status === "Success" && data.Details === "OTP Matched") {
+                    res.status(codes.OK).send({code: 1, sessionId: id.otpSessionId});
+                  } else {
+                    res.status(codes.UNAUTHORIZED).send({error: "You are dead to me"});
+                  }
+                }
+            });
+          }
+        });
+    });
+
+    router.put('/change-forgotten-pass/:email/:sessionId',
+     passport.authenticate('clientPassword', {session: false}),
+     function(req, res, next){
+      models.ID.findOne({email: req.params.email, otpSessionId: req.params.sessionId})
+        .exec(function(err, id){
+          if(err) {next(err);}
+          else if(!id) {res.status(codes.NOT_FOUND).send({error: "You are dead to me!"});}
+          else {
+            id.password = id.generateHash(req.body.newpassword);
+            id.otpSessionId = "";
+            id.save(function(err){
+    					if(err) next(err);
+    					else res.status(codes.CREATED).send({code: 1, _id: id._id});
+    				});
+          }
+        });
+    });
 
 
 

@@ -105,12 +105,12 @@ module.exports = function(models, ObjectId){
 
     //Create a Baker
 
-    createBaker("soulsugar", "soulsugar", "password", "5698785456", "Kandarpada, Dahisar (w)", "CAK536", localities[0]._id);
-    createBaker("cakestar", "cakestar", "password", "9865897456", "Kandarpada, Dahisar (w)", "CAK556", localities[0]._id);
+    createBaker("soulsugar", "soulsugar", "password", "9096081092", "Kandarpada, Dahisar (w)", "CAK536", localities[0]._id);
+    createBaker("cakestar", "cakestar", "password", "9619794793", "Kandarpada, Dahisar (w)", "CAK556", localities[0]._id);
     createBaker("gluttony", "gluttony", "password", "8975463259", "Kandarpada, Dahisar (w)", "CAK336", localities[0]._id);
     createBaker("patisseriehome", "thephome", "password", "9236598745", "Kandarpada, Dahisar (w)", "CAK236", localities[0]._id);
     createBaker("r9designer", "r9designer", "password", "7986594213", "Kandarpada, Dahisar (w)", "CAK531", localities[0]._id);
-    createBaker("theobroma", "theobroma", "password", "7896512365", "Powai, Andheri (w)", "CAK530", localities[0]._id);
+    createBaker("theobroma", "theobroma", "password", "7506908493", "Powai, Andheri (w)", "CAK530", localities[0]._id);
 
 
     createRider("Nikhil", "nikhil", "password", "MH 456895", "8965874596");
