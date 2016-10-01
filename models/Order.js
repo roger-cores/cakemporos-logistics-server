@@ -14,6 +14,7 @@ var orderSchema = mongoose.Schema({
   rider: {type: ObjectId, ref: 'rider', required: false},
 
   status: {type: String, required: true, default: "PENDING"},
+  started: {type: Boolean, required: true, default: false},
 
   cakeType: {type: String, required: true},
   cost: {type: Number, required: true},
