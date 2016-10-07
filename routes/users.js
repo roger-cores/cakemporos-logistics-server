@@ -301,7 +301,7 @@ module.exports.registerRoutes = function(models, passport, multiparty, utils, oa
 
 
     //register calls for order | RIDER | Authentication needed
-    router.use('/rider/order', preAuthenticate, authRider, riderOrder.registerRoutes(models, codes));
+    router.use('/rider/order', preAuthenticate, authRider, riderOrder.registerRoutes(models, codes, fcm_config));
 
 
 

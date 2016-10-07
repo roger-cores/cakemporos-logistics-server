@@ -21,7 +21,7 @@ var orderSchema = mongoose.Schema({
 
   pickUpDate: {type: Date, required: true},
   dropDate: {type: Date, required: false},
-  altPhone: {type: Number, required: false},
+  altPhone: {type: Number, required: false, min: 100000000, max: 9999999999},
   weight: {type: String, required: true},
 
   locality: {type: ObjectId, ref:'locality', required: true},
@@ -29,9 +29,12 @@ var orderSchema = mongoose.Schema({
 
 
   customer: {type: ObjectId, ref: 'customer', required: true},
-  dropAltPhone: {type:Number, required: false},
+  dropAltPhone: {type:Number, required: false, min: 100000000, max: 9999999999},
 
   createOrderDate: {type: Date, required: true, default: Date.now},
+
+  cost: {type: Number, required: false},
+  distance: {type: Number, required: false},
 
   trk : [{
     timestamp: {type: Date, required: true},

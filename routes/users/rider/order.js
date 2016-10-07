@@ -6,7 +6,7 @@ var geolib = require('geolib');
 var ObjectId = require('mongodb').ObjectID;
 var router = express.Router();
 //Order related calls for Riders
-module.exports.registerRoutes = function(models, codes){
+module.exports.registerRoutes = function(models, codes, fcm_config){
 
 
   //get all my orders | latest first
@@ -75,6 +75,10 @@ module.exports.registerRoutes = function(models, codes){
                             var distance = geolib.getPathLength(geopoints);
                           else distance = 0;
                           console.log(distance);
+
+                          order.cost = distance * 30;
+                          order.distance = distance;
+                          order.save(function(err){if(err) console.log(err);});
 
 
                           var fcm = new FCM(fcm_config.server_key);
@@ -158,7 +162,7 @@ module.exports.registerRoutes = function(models, codes){
 
   router.put('/location', function(req, res, next){
 
-
+      console.log(req.body);
       var updateOrder = function(order){
         if(req.body && req.body.latitude && req.body.longitude){
           req.body.timestamp = Date.now();
