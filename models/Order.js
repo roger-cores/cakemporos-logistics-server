@@ -33,7 +33,7 @@ var orderSchema = mongoose.Schema({
 
   createOrderDate: {type: Date, required: true, default: Date.now},
 
-  cost: {type: Number, required: false},
+  totalCost: {type: Number, required: false},
   distance: {type: Number, required: false},
 
   trk : [{

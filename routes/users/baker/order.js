@@ -76,12 +76,14 @@ module.exports.registerRoutes = function(models, codes, fcm_config){
         else if(!order) {next({error: "You are dead to me!"});}
         else {
           models.Rider.findOne({_id: order.rider})
+            .select('user')
             .populate('user', 'name email phone')
             .exec(function(err, rider){
               if(err) next(err);
               else if(!rider) {next({error: "You are dead to me!"});}
               else {
                 order.rider = rider;
+                console.log(order);
                 res.status(codes.OK).send(order);
               }
             });
@@ -333,9 +335,11 @@ router.put('/:orderid/ready', function(req, res, next){
               }
               if(!rider.order1){
                 rider.order1 = order._id;
+                console.log(rider.order1);
                 saveDocuments(done, order, rider, next);
               } else if(!rider.order2){
                 rider.order2 = order._id;
+                console.log(rider.order2);
                 saveDocuments(done, order, rider, next);
               } else {
                 next({error: "No Rider Found", error_description: "There isn't any rider available at this time"});
@@ -382,6 +386,7 @@ router.put('/:orderid/ready', function(req, res, next){
                   req.body.customer = customer._id;
                   var locality_id = req.body.locality._id;
                   req.body.locality = locality_id;
+                  req.body._id = new ObjectId();
 
                   // var id = new ObjectId();
                   // req.body._id = id;
@@ -425,6 +430,7 @@ router.put('/:orderid/ready', function(req, res, next){
             req.body.customer = customer_id;
             var locality_id = req.body.locality._id;
             req.body.locality = locality_id;
+            req.body._id = new ObjectId();
 
             // var id = new ObjectId();
             // req.body._id = id;

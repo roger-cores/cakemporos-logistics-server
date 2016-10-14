@@ -76,7 +76,7 @@ module.exports.registerRoutes = function(models, codes, fcm_config){
                           else distance = 0;
                           console.log(distance);
 
-                          order.cost = distance * 30;
+                          order.totalCost = ((distance/1000) * 30);
                           order.distance = distance;
                           order.save(function(err){if(err) console.log(err);});
 
@@ -172,12 +172,13 @@ module.exports.registerRoutes = function(models, codes, fcm_config){
             if(err)
               next(err);
             else {
-              res.status(codes.CREATED).send({code: 1});
+
             }
           });
         }
         else {
-          res.status(codes.SERVER_ERROR).send({error: "Internal Server Error"});
+          console.log(codes.SERVER_ERROR);
+          //res.status(codes.SERVER_ERROR).send({error: "Internal Server Error"});
         }
       }
 
@@ -185,18 +186,20 @@ module.exports.registerRoutes = function(models, codes, fcm_config){
         .populate('order1')
         .populate('order2')
         .exec(function(err, rider){
+          console.log(rider);
           if(err) next(err);
           else if(!rider) {res.status(codes.NOT_FOUND).send({error: "You are dead to me!"});}
           else {
             var close = false;
+            console.log(rider);
             if(rider.order1 && rider.order1.started && rider.order1.status === "DISPATCHED"){
               updateOrder(rider.order1);
             }
-            if(rider.order2 && rider.order1.started && rider.order1.status === "DISPATCHED"){
+            if(rider.order2 && rider.order2.started && rider.order2.status === "DISPATCHED"){
               updateOrder(rider.order2);
             }
 
-            if(!((rider.order1 && rider.order1.started && rider.order1.status === "DISPATCHED") || (rider.order2 && rider.order1.started && rider.order1.status === "DISPATCHED"))) {
+            if(!((rider.order1 && rider.order1.started && rider.order1.status === "DISPATCHED") || (rider.order2 && rider.order2.started && rider.order2.status === "DISPATCHED"))) {
               close = true;
             }
 
