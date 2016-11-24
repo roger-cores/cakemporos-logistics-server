@@ -14,7 +14,7 @@
     "host": "127.0.0.1",
     "port": 27017
   },
-  "production": {
+  "prod": {
     "username": "root",
     "password": "root",
     "database": "cakemporos_prod",
