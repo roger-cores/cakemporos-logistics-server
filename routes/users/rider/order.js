@@ -3,6 +3,7 @@ var moment = require('moment');
 var shortid = require('shortid');
 var mongoose = require('mongoose');
 var geolib = require('geolib');
+var FCM = require('fcm-push');
 var ObjectId = require('mongodb').ObjectID;
 var router = express.Router();
 //Order related calls for Riders
@@ -24,7 +25,15 @@ module.exports.registerRoutes = function(models, codes, fcm_config){
 
             .populate('customer', 'address firstName lastName phone')
             .populate('locality', 'name')
-            .populate('baker', '_id')
+            .populate({
+		path: 'baker',
+		select: 'user',
+		populate: {
+				path: 'user',
+				select: 'phone',
+				model: 'login'
+			  }
+	    })
             .populate('rider', '_id')
             .exec(function(err, orders){
               if(err) next(err);
@@ -50,6 +59,18 @@ module.exports.registerRoutes = function(models, codes, fcm_config){
           return;
         } else {
           order.status = "DELIVERED";
+          if(rider.order1 == order._id){
+            rider.order1 = null;
+          } else if(rider.order2 == order._id){
+            rider.order2 = null;
+          }
+          rider.save(function(err, rider){
+            if(err) console.log(err);
+            else if(!rider) console.log("rider update failed");
+            else {
+              console.log("rider clean Successfully");
+            }
+          });
           order.save(function(err, order){
             if(err) next(err);
             else if(!order) {next({error: "You are dead to me!"});}
@@ -75,11 +96,54 @@ module.exports.registerRoutes = function(models, codes, fcm_config){
                             var distance = geolib.getPathLength(geopoints);
                           else distance = 0;
                           console.log(distance);
+                          var distanceInKm = Math.round(distance/1000);
+                          if(order.orderType.valueOf() == "NORMAL".valueOf()){
+                            var timeDifference = order.createOrderDate.getTime() - order.pickUpDate.getTime();
+                            var resultInMinutes = Math.round(difference / 60000);
 
-                          order.totalCost = ((distance/1000) * 30);
+                            if(resultInMinutes > 120) {
+                              //NORMAL
+
+                              if(distanceInKm <= 3) {
+                                order.totalCost = 60 * distanceInKm;
+                              } else {
+                                order.totalCost = 60 + ((distanceInKm - 3) * 12)
+                              }
+                            } else {
+                              //EXPRESS
+                              if(distanceInKm <= 3) {
+                                order.totalCost = 90 * distanceInKm;
+                              } else {
+                                order.totalCost = 90 + ((distanceInKm - 3) * 15)
+                              }
+
+
+                            }
+                          } else if(order.orderType.valueOf() == "JET".valueOf()){
+                            order.totalCost = 250;
+                          } else if(order.orderType.valueOf() == "SUPER".valueOf()){
+                            if(distanceInKm < 5) {
+                              order.totalCost = 250;
+                            } else {
+                              order.totalCost = 250 + ((distanceInKm - 5) * 15);
+                            }
+                          }
+
                           order.distance = distance;
+
                           order.save(function(err){if(err) console.log(err);});
 
+                          baker.logs.push({
+                            order: order._id,
+                            logType: "DEBIT",
+                            deducted: order.totalCost,
+                            credited: 0,
+                            walletBalanceBefore: baker.wallet,
+                            timeStamp: Date.now()
+                          });
+                          baker.wallet -= order.totalCost;
+
+                          baker.save(function(err){if(err) console.log(err);})
 
                           var fcm = new FCM(fcm_config.server_key);
 

@@ -23,6 +23,7 @@
     "mongojs": "^2.3.0",
     "mongoose": "^4.0.0",
     "mongoose-search-plugin": "^0.1.2",
+    "mongoose-transaction": "0.0.3",
     "morgan": "~1.6.1",
     "multiparty": "^4.1.2",
     "mv": "^2.1.1",

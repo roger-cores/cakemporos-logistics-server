@@ -40,7 +40,11 @@ var orderSchema = mongoose.Schema({
     timestamp: {type: Date, required: true},
     latitude : {type: String, required: true},
     longitude : {type: String, required: true}
-     }]
+  }],
+
+  instructions: {type: String, required: false, default: 'none'},
+
+  orderType: {type: String, required: true, default: 'NORMAL'}
 
 });
 
@@ -51,10 +55,14 @@ var orderSchema = mongoose.Schema({
 var Order = mongoose.model('order', orderSchema);
 Order.schema.path('cakeType').validate(function(value){
 	return /Customized|Normal|Photo/.test(value);
+}, 'Invalid CakeType');
+
+Order.schema.path('orderType').validate(function(value){
+	return /NORMAL|JET|SUPER/.test(value);
 }, 'Invalid OrderType');
 
 Order.schema.path('status').validate(function(value){
-	return /CANCELLED|DISPATCHED|DELIVERED|READY|PENDING/.test(value);
+	return /CANCELLED|DISPATCHED|DELIVERED|READY|PENDING|APPROVED/.test(value);
 }, 'Invalid Order Status');
 
 

@@ -6,6 +6,7 @@ var riderOrder = require('./users/rider/order');
 var rate = require('./users/baker/rate');
 var locality = require('./users/baker/locality');
 var customer = require('./users/baker/customer');
+var superAdmin = require('./users/super/admin');
 var router = express.Router();
 var crypto = require('crypto');
 var FCM = require('fcm-push');
@@ -256,7 +257,7 @@ module.exports.registerRoutes = function(models, passport, multiparty, utils, oa
               });
           } else {
             models.Baker.findOne({user: req.body.user_id})
-              .select('locality address referal')
+              .select('locality address referal wallet logs')
               .populate('locality')
               .exec(function(err, baker){
                 if(err) next(err);
@@ -276,15 +277,27 @@ module.exports.registerRoutes = function(models, passport, multiparty, utils, oa
         if(err) next(err);
         else if(!baker) res.status(codes.UNAUTHORIZED).send({message: "UNAUTHORIZED"});
         else {
+          req.thisBaker = baker;
           next();
         }
       });
     }
 
     var authRider = function(req, res, next){
-      models.Rider.find({login: req.body.user_id}, function(err, baker){
+      models.Rider.find({login: req.body.user_id}, function(err, rider){
         if(err) next(err);
-        else if(!baker) res.status(codes.UNAUTHORIZED).send({message: "UNAUTHORIZED"});
+        else if(!rider) res.status(codes.UNAUTHORIZED).send({message: "UNAUTHORIZED"});
+        else {
+          req.thisRider = rider;
+          next();
+        }
+      });
+    }
+
+    var authSuper = function(req, res, next){
+      models.ID.find({_id: req.body.user_id, email: "nikhil.salome@gmail.com"}, function(err, user){
+        if(err) next(err);
+        else if(!user) res.status(codes.UNAUTHORIZED).send({message: "UNAUTHORIZED"});
         else {
           next();
         }
@@ -303,7 +316,7 @@ module.exports.registerRoutes = function(models, passport, multiparty, utils, oa
     //register calls for order | RIDER | Authentication needed
     router.use('/rider/order', preAuthenticate, authRider, riderOrder.registerRoutes(models, codes, fcm_config));
 
-
+    router.use('/super/admin', preAuthenticate, authSuper, superAdmin.registerRoutes(models, codes, fcm_config));
 
 
 	return router;

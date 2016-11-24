@@ -28,6 +28,17 @@ module.exports = function(models, ObjectId){
     new models.Rider(riderx).save(callback);
   }
 
+  var createSuperAdmin = function(name, email, password, phoneNumber){
+    var newId = new models.ID();
+    newId._id = new ObjectId();
+    newId.email = email;
+    newId.name = name;
+    newId.phone = phoneNumber;
+    newId.userType = "BAKER";
+    newId.password = newId.generateHash(password);
+    newId.save(callback);
+  }
+
   var createBaker = function(name, email, password, phoneNumber, address, referal, locality){
     var newId = new models.ID();
     newId._id = new ObjectId();
@@ -79,23 +90,61 @@ module.exports = function(models, ObjectId){
     }
 
     var rate1 = {
-      name: "NORMAL 5",
-      value: 500
+      name: "NORMAL UPTO 3",
+      type: "NORMAL",
+      min: 0,
+      max: 3,
+      value: 60
     }
 
     var rate2 = {
-      name: "NORMAL MORE",
-      value: 100
+      name: "NORMAL UPTO 10",
+      type: "NORMAL",
+      min: 4,
+      max: 10,
+      value: 12
     }
 
     var rate11 = {
-      name: "EXPRESS 5",
-      value: 650
+      name: "EXPRESS UPTO 3",
+      min: 0,
+      type: "EXPRESS",
+      max: 3,
+      value: 90
     }
 
     var rate22 = {
-      name: "EXPRESS MORE",
-      value: 150
+      name: "EXPRESS UPTO 10",
+      min: 4,
+      type: "EXPRESS",
+      max: 10,
+      value: 15
+    }
+
+    var rate3 = {
+      name: "JET",
+      type: "JET",
+      min: -1,
+      max: -1,
+      value: 250,
+      flat: true
+    }
+
+    var rate41 = {
+      name: "SUPER JET UPTO 5",
+      type: "SUPER",
+      min: 0,
+      max: 5,
+      value: 250,
+      flat: true
+    }
+
+    var rate42 = {
+      name: "SUPER JET AFTER 5",
+      type: "SUPER",
+      min: 6,
+      max: -1,
+      value: 15
     }
 
 
@@ -110,15 +159,18 @@ module.exports = function(models, ObjectId){
     createBaker("gluttony", "gluttony", "password", "8975463259", "Kandarpada, Dahisar (w)", "CAK336", localities[0]._id);
     createBaker("patisseriehome", "thephome", "password", "9236598745", "Kandarpada, Dahisar (w)", "CAK236", localities[0]._id);
     createBaker("r9designer", "r9designer", "password", "7986594213", "Kandarpada, Dahisar (w)", "CAK531", localities[0]._id);
-    createBaker("theobroma", "theobroma", "password", "7506908493", "Powai, Andheri (w)", "CAK530", localities[0]._id);
+    //createBaker("theobroma", "theobroma", "password", "7506908493", "Powai, Andheri (w)", "CAK530", localities[0]._id);
 
 
-    createRider("Nikhil", "nikhil", "password", "MH 456895", "8965874596");
-    createRider("Roger", "roger", "password", "MH 986598", "5897462135");
-    createRider("Maitreya", "matty", "password", "MH 002564", "5546956221");
-    createRider("Minal", "minal", "password", "MH 986545", "6054987562");
-    createRider("Atmaram", "atmaram", "password", "MH 320159", "4589875624");
-    createRider("Ardhchandra", "ardhchandra", "password", "MH 987654", "9876521368");
+    createRider("Nikhil", "nikhil", "password", "MH 456895", "7506908493");
+    // createRider("Roger", "roger", "password", "MH 986598", "5897462135");
+    // createRider("Maitreya", "matty", "password", "MH 002564", "5546956221");
+    // createRider("Minal", "minal", "password", "MH 986545", "6054987562");
+    // createRider("Atmaram", "atmaram", "password", "MH 320159", "4589875624");
+    // createRider("Ardhchandra", "ardhchandra", "password", "MH 987654", "9876521368");
+
+
+    createSuperAdmin("Nikhil Shirsath", "nikhil.salome@gmail.com", "cake", "8965874596");
 
     // var newId = new models.ID();
     // newId._id = new ObjectId();
@@ -219,6 +271,12 @@ module.exports = function(models, ObjectId){
     new models.Rate(rate2).save(callback);
     new models.Rate(rate11).save(callback);
     new models.Rate(rate22).save(callback);
+
+
+    new models.Rate(rate3).save(callback);
+    new models.Rate(rate42).save(callback);
+    new models.Rate(rate41).save(callback);
+
 
     for(var i=0; i<localities.length; i++){
       new models.Locality(localities[i]).save(callback);

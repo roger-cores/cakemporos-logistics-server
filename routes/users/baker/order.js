@@ -80,7 +80,7 @@ module.exports.registerRoutes = function(models, codes, fcm_config){
             .populate('user', 'name email phone')
             .exec(function(err, rider){
               if(err) next(err);
-              else if(!rider) {next({error: "You are dead to me!"});}
+              else if(!rider) {res.status(codes.OK).send(order);}
               else {
                 order.rider = rider;
                 console.log(order);
@@ -251,6 +251,7 @@ router.put('/:orderid/ready', function(req, res, next){
 
   var saveDocuments = function(done, order, rider, next){
     console.log("rider: " + rider);
+    if(rider)
     rider.save(function(err, rider){
       if(err) next(err);
       else if(!rider){next({error: "Internal", error_description: "Internal Error"});}
@@ -290,13 +291,14 @@ router.put('/:orderid/ready', function(req, res, next){
         done(order);
       }
     });
+    else done(order);
   }
 
   var findGreenAndGoToRed = function(done, order, next){
     models.Rider.findOne({status: "GREEN"})
       .exec(function(err, rider){
         if(err) next(err);
-        else if(!rider){next({error: "No Rider Found", error_description: "There isn't any rider available at this time"});}
+        else if(!rider){saveDocuments(done, order, null, next);}
         else {
           order.rider = rider._id;
           rider.status = "RED";
@@ -307,7 +309,7 @@ router.put('/:orderid/ready', function(req, res, next){
             rider.order2 = order._id;
             saveDocuments(done, order, rider, next);
           } else {
-              next({error: "No Rider Found", error_description: "There isn't any rider available at this time"});
+              saveDocuments(done, order, null, next);
           }
         }
       });
@@ -322,7 +324,7 @@ router.put('/:orderid/ready', function(req, res, next){
         models.Rider.findOne({$or: [{status: "GREEN"}, {status: "ORANGE"}]})
           .exec(function(err, rider){
             if(err) next(err);
-            else if(!rider){next({error: "No Rider Found", error_description: "There isn't any rider available at this time"});}
+            else if(!rider){saveDocuments(done, order, null, next);}
             else {
               order.rider = rider._id;
               if(rider.status == "GREEN"){
@@ -330,8 +332,8 @@ router.put('/:orderid/ready', function(req, res, next){
               } else if(rider.status == "ORANGE"){
                 rider.status = "RED";
               } else {
-                next({error: "No Rider Found", error_description: "There isn't any rider available at this time"});
-                return;
+                // next({error: "No Rider Found", error_description: "There isn't any rider available at this time"});
+                // return;
               }
               if(!rider.order1){
                 rider.order1 = order._id;
@@ -342,7 +344,7 @@ router.put('/:orderid/ready', function(req, res, next){
                 console.log(rider.order2);
                 saveDocuments(done, order, rider, next);
               } else {
-                next({error: "No Rider Found", error_description: "There isn't any rider available at this time"});
+                saveDocuments(done, order, null, next);
               }
             }
           });
