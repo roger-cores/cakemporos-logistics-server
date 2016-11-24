@@ -15,6 +15,10 @@
     "port": 27017
   },
   "production": {
-
+    "username": "root",
+    "password": "root",
+    "database": "cakemporos_prod",
+    "host": "ds159737.mlab.com",
+    "port": 59737
   }
 }
