@@ -5,7 +5,10 @@ var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 
 var localitySchema = new Schema({
-	name: {type: String, required: true, unique: true}
+	placeId: {type: String, required: true, unique: true},
+	name: {type: String, required: true, unique: false},
+	lat: {type: Number, required: true, unique: false},
+	lon: {type: Number, required: true, unique: false}
 });
 
 localitySchema.plugin(searchPlugin, {

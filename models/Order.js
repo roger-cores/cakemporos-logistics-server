@@ -44,7 +44,9 @@ var orderSchema = mongoose.Schema({
 
   instructions: {type: String, required: false, default: 'none'},
 
-  orderType: {type: String, required: true, default: 'NORMAL'}
+  orderType: {type: String, required: true, default: 'NORMAL'},
+
+  estimatedCost: {type: Number, required: false, default: -1}
 
 });
 

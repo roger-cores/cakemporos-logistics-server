@@ -149,7 +149,7 @@ module.exports = function(models, ObjectId){
 
 
 
-    var localities = [{"name": "IC Colony, Borivali", _id: new ObjectId()},{"name": "Anand Nagar, Thane"},{"name": "Kandarpada, Dahisar"}];
+    var localities = [{"name": "Anand Nagar, Thane", _id: new ObjectId(), placeId:"ChIJ640aCBK55zsRifpsEySY2uM", lat:19.247436600000004, lon: 72.8471169}];
 
 
     //Create a Baker

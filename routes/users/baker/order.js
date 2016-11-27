@@ -360,6 +360,24 @@ router.put('/:orderid/ready', function(req, res, next){
   }
 
   router.post('/', function(req, res, next){
+    //find locality and create if it doesn't exist
+    models.Locality.findOne({placeId: req.body.locality.placeId})
+      .exec(function(err, locality){
+        if(err) next(err);
+        else if(!locality) {
+          new models.Locality(req.body.locality).save(function(err, locality){
+            if(err) next(err);
+            else if(!locality) next({error: "Internal Server Error", error_description: "500"});
+            else {
+              req.body.locality._id = locality._id;
+              next();
+            }
+          });
+        }
+        else next();
+      });
+
+  }, function(req, res, next){
     console.log(req.body);
 
     //req.body.pUpDate = moment(req.body.pickUpDate, "DD-MM-YYYY HH:mm:ss");
