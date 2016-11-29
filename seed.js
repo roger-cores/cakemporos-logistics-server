@@ -149,12 +149,12 @@ module.exports = function(models, ObjectId){
 
 
 
-    var localities = [{"name": "Anand Nagar, Thane", _id: new ObjectId(), placeId:"ChIJ640aCBK55zsRifpsEySY2uM", lat:19.247436600000004, lon: 72.8471169}];
+    var localities = [{"name": "Panchsheel Nagar, Thane (W)", _id: new ObjectId(), placeId:"ChIJ0Teo_ke55zsRpdgR_JAQ6Lw", lat:19.2095645, lon: 72.9811187}];
 
 
     //Create a Baker
 
-    createBaker("soulsugar", "soulsugar", "password", "9096081092", "Kandarpada, Dahisar (w)", "CAK536", localities[0]._id);
+    createBaker("soulsugar", "soulsugar", "password", "9096081092", "Soulsugar, Rutu Park", "CAK536", localities[0]._id);
     createBaker("cakestar", "cakestar", "password", "9619794793", "Kandarpada, Dahisar (w)", "CAK556", localities[0]._id);
     createBaker("gluttony", "gluttony", "password", "8975463259", "Kandarpada, Dahisar (w)", "CAK336", localities[0]._id);
     createBaker("patisseriehome", "thephome", "password", "9236598745", "Kandarpada, Dahisar (w)", "CAK236", localities[0]._id);
