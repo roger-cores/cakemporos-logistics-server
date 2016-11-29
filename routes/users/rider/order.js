@@ -101,15 +101,15 @@ module.exports.registerRoutes = function(models, codes, fcm_config){
                             var timeDifference = order.createOrderDate.getTime() - order.pickUpDate.getTime();
                             var resultInMinutes = Math.round(difference / 60000);
 
-                            if(resultInMinutes > 120) {
-                              //NORMAL
-
-                              if(distanceInKm <= 3) {
-                                order.totalCost = 60 * distanceInKm;
-                              } else {
-                                order.totalCost = 60 + ((distanceInKm - 3) * 12)
-                              }
-                            } else {
+                            // if(resultInMinutes > 120) {
+                            //   //NORMAL
+                            //
+                            //   if(distanceInKm <= 3) {
+                            //     order.totalCost = 60 * distanceInKm;
+                            //   } else {
+                            //     order.totalCost = 60 + ((distanceInKm - 3) * 12)
+                            //   }
+                            // } else {
                               //EXPRESS
                               if(distanceInKm <= 3) {
                                 order.totalCost = 90 * distanceInKm;
@@ -118,7 +118,7 @@ module.exports.registerRoutes = function(models, codes, fcm_config){
                               }
 
 
-                            }
+                            // }
                           } else if(order.orderType.valueOf() == "JET".valueOf()){
                             order.totalCost = 250;
                           } else if(order.orderType.valueOf() == "SUPER".valueOf()){
@@ -128,7 +128,9 @@ module.exports.registerRoutes = function(models, codes, fcm_config){
                               order.totalCost = 250 + ((distanceInKm - 5) * 15);
                             }
                           }
-
+                          if(order.totalCost < 65) {
+                            order.totalCost = 65;
+                          }
                           order.distance = distance;
 
                           order.save(function(err){if(err) console.log(err);});
