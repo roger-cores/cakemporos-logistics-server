@@ -25,7 +25,7 @@ var admin = require('./routes/admin/admin');
 var FCM = require('fcm-push');
 var multiparty = require('multiparty');
 //set to qa server
-connector(mongoose, dbaseConfig.prod);
+connector(mongoose, dbaseConfig.qa);
 //<------ uncomment the following to re-init database from scratch  ------>
 seed(models, require('mongodb').ObjectID);
 

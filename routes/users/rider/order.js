@@ -112,9 +112,9 @@ module.exports.registerRoutes = function(models, codes, fcm_config){
                             // } else {
                               //EXPRESS
                               if(distanceInKm <= 3) {
-                                order.totalCost = 90 * distanceInKm;
+                                order.totalCost = 60;
                               } else {
-                                order.totalCost = 90 + ((distanceInKm - 3) * 15)
+                                order.totalCost = 60 + ((distanceInKm - 3) * 15)
                               }
 
 
@@ -128,8 +128,8 @@ module.exports.registerRoutes = function(models, codes, fcm_config){
                               order.totalCost = 250 + ((distanceInKm - 5) * 15);
                             }
                           }
-                          if(order.totalCost < 65) {
-                            order.totalCost = 65;
+                          if(order.totalCost < 60) {
+                            order.totalCost = 60;
                           }
                           order.distance = distance;
 

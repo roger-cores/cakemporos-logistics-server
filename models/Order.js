@@ -46,7 +46,9 @@ var orderSchema = mongoose.Schema({
 
   orderType: {type: String, required: true, default: 'NORMAL'},
 
-  estimatedCost: {type: Number, required: false, default: -1}
+  estimatedCost: {type: Number, required: false, default: -1},
+
+  paymentType: {type: String, required: true, default: 'CASH'}
 
 });
 
@@ -58,6 +60,11 @@ var Order = mongoose.model('order', orderSchema);
 Order.schema.path('cakeType').validate(function(value){
 	return /Customized|Normal|Photo/.test(value);
 }, 'Invalid CakeType');
+
+Order.schema.path('paymentType').validate(function(value){
+	return /CASH|CARD/.test(value);
+}, 'Invalid CakeType');
+
 
 Order.schema.path('orderType').validate(function(value){
 	return /NORMAL|JET|SUPER/.test(value);
