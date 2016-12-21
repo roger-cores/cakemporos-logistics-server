@@ -23,7 +23,7 @@ module.exports.registerRoutes = function(models, codes){
               "lastName": 1,
               "phone": 1
             })
-            .populate("locality", "name")
+            .populate("locality", "name placeId lat lon")
             .exec(function(err, customers){
               if(err) next(err);
               else if(!customers) next({message: "All these customers be dead to me", error_description:""});
