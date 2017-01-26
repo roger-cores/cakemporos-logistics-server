@@ -372,5 +372,16 @@ module.exports.registerRoutes = function(models, codes, fcm_config){
   });
 
 
+  router.put('/rate/:rateId', function(req, res, next){
+    models.Rate.update({_id: req.params.rateId}, {$set: req.body}, function(err, rate){
+      if(err) next(err);
+      else if(!rate){next({error: "Creation failed"});}
+      else {
+        res.status(codes.CREATED).send({_id: rate._id});
+      }
+    });
+  });
+
+
   return router;
 }
